@@ -144,6 +144,8 @@ Flare Stack Blog 的所有面向用户的页面与布局均通过**主题契约�
 
 请参考 **[Flare Stack Blog 部署教程](https://blog.dukda.com/post/flare-stack-blog%E9%83%A8%E7%BD%B2%E6%95%99%E7%A8%8B)**，包含 Cloudflare 资源创建、凭证获取、GitHub OAuth 配置、两种部署方式的详细图文步骤及常见问题排查。
 
+**[视频教程](https://www.bilibili.com/video/BV1R4fnBhEs4?p=2)** 已上线
+
 ---
 
 ## 环境变量参考
