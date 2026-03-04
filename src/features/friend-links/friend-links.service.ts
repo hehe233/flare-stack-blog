@@ -275,7 +275,7 @@ export async function deleteFriendLink(
     data.id,
   );
   if (!friendLink) {
-    return err({ reason: "NOT_FOUND" as const });
+    return err({ reason: "NOT_FOUND" });
   }
 
   await FriendLinkRepo.deleteFriendLink(context.db, data.id);

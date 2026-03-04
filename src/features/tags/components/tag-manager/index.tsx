@@ -76,7 +76,13 @@ export function TagManager() {
   });
 
   const deleteTagMutation = useMutation({
-    mutationFn: (id: number) => deleteTagFn({ data: { id } }),
+    mutationFn: async (id: number) => {
+      const result = await deleteTagFn({ data: { id } });
+      if (result.error) {
+        throw new Error("标签不存在");
+      }
+      return result.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: TAGS_KEYS.admin });
       setTagToDelete(null);

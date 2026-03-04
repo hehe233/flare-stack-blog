@@ -316,7 +316,9 @@ export async function deletePost(
   data: DeletePostInput,
 ) {
   const post = await PostRepo.findPostById(context.db, data.id);
-  if (!post) return;
+  if (!post) {
+    return err({ reason: "POST_NOT_FOUND" });
+  }
 
   await PostRepo.deletePost(context.db, data.id);
 
@@ -344,6 +346,8 @@ export async function deletePost(
       CacheService.deleteKey(context, POSTS_CACHE_KEYS.syncHash(data.id)),
     );
   }
+
+  return ok({ success: true });
 }
 
 export async function previewSummary(
