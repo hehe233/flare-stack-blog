@@ -1,15 +1,20 @@
-/* Theme: fuwari - Fuwari-style variables and utilities */
+/* Theme: kurin - Kurin-style variables and utilities */
 @import "tailwindcss";
 @import "@/styles/shared.css";
 @import "./markdown.css";
 @plugin "@tailwindcss/typography";
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   :root {
     --fuwari-radius-large: 1rem;
     --fuwari-content-delay: 150ms;
     --fuwari-hue: 250;
     --fuwari-page-width: 75rem;
+    --fuwari-toc-width: calc((100vw - var(--fuwari-page-width)) / 2 - 1rem);
 
     /* Light mode */
     --fuwari-primary: oklch(0.7 0.14 var(--fuwari-hue));
@@ -32,6 +37,8 @@
     --fuwari-inline-code-color: var(--fuwari-btn-content);
     --fuwari-input-bg: rgba(0, 0, 0, 0.07);
     --fuwari-input-border: rgba(0, 0, 0, 0.1);
+    --fuwari-toc-btn-hover: oklch(0.926 0.015 var(--fuwari-hue));
+    --fuwari-toc-btn-active: oklch(0.9 0.015 var(--fuwari-hue));
   }
 
   .dark {
@@ -52,6 +59,8 @@
     --fuwari-inline-code-color: var(--fuwari-btn-content);
     --fuwari-input-bg: rgba(255, 255, 255, 0.05);
     --fuwari-input-border: rgba(255, 255, 255, 0.1);
+    --fuwari-toc-btn-hover: oklch(0.22 0.02 var(--fuwari-hue));
+    --fuwari-toc-btn-active: oklch(0.25 0.02 var(--fuwari-hue));
   }
 }
 
@@ -75,15 +84,12 @@
       background-color 0.2s,
       color 0.2s;
   }
-
   .fuwari-btn-regular:hover {
     background-color: var(--fuwari-btn-regular-bg-hover);
   }
-
   .fuwari-btn-regular:active {
     background-color: var(--fuwari-btn-regular-bg-active);
   }
-
   .dark .fuwari-btn-regular {
     color: rgb(255 255 255 / 0.75);
   }
@@ -99,20 +105,16 @@
       color 0.2s,
       opacity 0.2s;
   }
-
   .fuwari-btn-primary:hover {
     background-color: var(--fuwari-primary-hover);
   }
-
   .fuwari-btn-primary:active {
     background-color: var(--fuwari-primary-active);
   }
-
   .fuwari-btn-primary:disabled {
     opacity: 0.5;
     pointer-events: none;
   }
-
   .dark .fuwari-btn-primary {
     color: rgb(0 0 0 / 0.75);
   }
@@ -120,7 +122,6 @@
   .fuwari-text-90 {
     color: rgb(0 0 0 / 0.9);
   }
-
   .dark .fuwari-text-90 {
     color: rgb(255 255 255 / 0.9);
   }
@@ -128,7 +129,6 @@
   .fuwari-text-75 {
     color: rgb(0 0 0 / 0.75);
   }
-
   .dark .fuwari-text-75 {
     color: rgb(255 255 255 / 0.75);
   }
@@ -136,7 +136,6 @@
   .fuwari-text-50 {
     color: rgb(0 0 0 / 0.5);
   }
-
   .dark .fuwari-text-50 {
     color: rgb(255 255 255 / 0.5);
   }
@@ -144,7 +143,6 @@
   .fuwari-text-30 {
     color: rgb(0 0 0 / 0.3);
   }
-
   .dark .fuwari-text-30 {
     color: rgb(255 255 255 / 0.3);
   }
@@ -168,7 +166,6 @@
     position: relative;
     z-index: 0;
   }
-
   .fuwari-expand-animation::before {
     content: "";
     position: absolute;
@@ -180,12 +177,10 @@
       scale 0.2s ease-out,
       background-color 0.2s;
   }
-
   .fuwari-expand-animation:hover::before {
     scale: 1;
     background-color: var(--fuwari-btn-plain-bg-hover);
   }
-
   .fuwari-expand-animation:active::before {
     background-color: var(--fuwari-btn-plain-bg-active);
   }
@@ -193,7 +188,6 @@
   .fuwari-timeline-dash {
     position: relative;
   }
-
   .fuwari-timeline-dash::before {
     content: "";
     position: absolute;
@@ -205,9 +199,53 @@
     transition: all 0.3s;
     transform: translateY(-50%);
   }
-
   .dark .fuwari-timeline-dash::before {
     border-left: 2px dashed rgba(255, 255, 255, 0.1);
+  }
+
+  .fuwari-code-folding-wrapper {
+    @apply relative transition-[max-height] duration-500 ease-in-out overflow-x-auto overflow-y-hidden;
+  }
+
+  .fuwari-code-mask {
+    @apply absolute bottom-0 left-0 right-0 h-24 pointer-events-none;
+    background: linear-gradient(to bottom, transparent, var(--fuwari-card-bg));
+    z-index: 10;
+  }
+
+  .fuwari-toc-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+  }
+  .dark .fuwari-toc-scrollbar {
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+  .fuwari-toc-scrollbar:hover {
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+  .dark .fuwari-toc-scrollbar:hover {
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+  .fuwari-toc-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .fuwari-toc-scrollbar::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  .fuwari-toc-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    border: none;
+  }
+  .fuwari-toc-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  .dark .fuwari-toc-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  .dark .fuwari-toc-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -217,7 +255,6 @@
     transform: translateY(2rem);
     opacity: 0;
   }
-
   100% {
     transform: translateY(0);
     opacity: 1;

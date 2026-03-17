@@ -97,6 +97,15 @@ export function resolveSiteConfig(
           config?.site?.theme?.fuwari?.primaryHue ??
           blogConfig.theme.fuwari.primaryHue,
       },
+      kurin: {
+        homeBg:
+          config?.site?.theme?.fuwari?.homeBg ?? blogConfig.theme.fuwari.homeBg,
+        avatar:
+          config?.site?.theme?.fuwari?.avatar ?? blogConfig.theme.fuwari.avatar,
+        primaryHue:
+          config?.site?.theme?.fuwari?.primaryHue ??
+          blogConfig.theme.fuwari.primaryHue,
+      },
     },
   });
 }
