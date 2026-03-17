@@ -27,8 +27,8 @@ export const blogConfig = {
       primaryHue: 250,
     },
     kurin: {
-      homeBg: env.VITE_FUWARI_HOME_BG || "/images/home-bg.jpg",
-      avatar: env.VITE_FUWARI_AVATAR || "/images/avatar.png",
+      homeBg: "/images/home-bg.jpg",
+      avatar: "/images/avatar.png",
     },
   },
 } as const satisfies SiteConfig;
