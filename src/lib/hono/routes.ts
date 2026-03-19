@@ -1,10 +1,9 @@
 import handler from "@tanstack/react-start/server-entry";
+import type { Context } from "hono";
 import { Hono } from "hono";
 import { proxy } from "hono/proxy";
 import { exportDownloadRoute } from "@/features/import-export/api/hono/download.route";
-import mcpRoute from "@/features/mcp/api/mcp.route";
 import { handleImageRequest } from "@/features/media/service/media.service";
-import oauthProviderRoute from "@/features/oauth-provider/api/oauth-provider.route";
 import postsDetailRoute from "@/features/posts/api/hono/posts.detail.route";
 import postsListRoute from "@/features/posts/api/hono/posts.list.route";
 import postsRelatedRoute from "@/features/posts/api/hono/posts.related.route";
@@ -25,6 +24,11 @@ export const app = new Hono<{ Bindings: Env }>();
 
 app.get("*", cacheMiddleware);
 
+async function forwardAuthRequest(c: Context<{ Bindings: Env }>) {
+  const auth = c.get("auth");
+  return auth.handler(c.req.raw);
+}
+
 /* ================================ Public API ================================ */
 
 // Public API routes with RPC support - 链式调用保留类型推断
@@ -38,9 +42,7 @@ const publicApi = new Hono<{ Bindings: Env }>()
 // Mount public API
 app.route("/api", publicApi);
 
-app.route("/mcp", mcpRoute);
 app.route("/", siteDocumentsRoute);
-app.route("/", oauthProviderRoute);
 
 // Export type for RPC client
 export type PublicApiType = typeof publicApi;
@@ -90,10 +92,7 @@ app.get("/images/:key{.+}", async (c) => {
   }
 });
 
-app.get("/api/auth/*", baseMiddleware, (c) => {
-  const auth = c.get("auth");
-  return auth.handler(c.req.raw);
-});
+app.get("/api/auth/*", baseMiddleware, forwardAuthRequest);
 
 const protectedAuthPaths = [
   "/api/auth/sign-in/email",
@@ -118,10 +117,7 @@ protectedAuthPaths.forEach((path) => {
       interval: "1h",
       identifier: (c) => `hourly:${createRateLimiterIdentifier(c)}`,
     }),
-    (c) => {
-      const auth = c.get("auth");
-      return auth.handler(c.req.raw);
-    },
+    forwardAuthRequest,
   );
 });
 
@@ -133,10 +129,7 @@ app.post(
     interval: "1m",
     identifier: createRateLimiterIdentifier,
   }),
-  (c) => {
-    const auth = c.get("auth");
-    return auth.handler(c.req.raw);
-  },
+  forwardAuthRequest,
 );
 
 // Admin export download route

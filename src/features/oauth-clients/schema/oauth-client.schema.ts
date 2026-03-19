@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { OAUTH_PROVIDER_SCOPES } from "@/features/oauth-provider/oauth-provider.config";
+import { OAUTH_PROVIDER_SCOPES } from "@/features/oauth-provider/oauth-provider.shared";
 
 const OAUTH_SCOPE_SET = new Set<string>(OAUTH_PROVIDER_SCOPES);
 
@@ -16,6 +16,10 @@ export const OAuthScopeListSchema = z
     "Invalid scope",
   );
 
+const PersistedOAuthScopeListSchema = z
+  .array(z.string())
+  .transform((scopes) => scopes.filter((scope) => OAUTH_SCOPE_SET.has(scope)));
+
 export const OAuthConnectionSchema = z.object({
   consentId: z.string(),
   clientId: z.string(),
@@ -23,10 +27,9 @@ export const OAuthConnectionSchema = z.object({
   clientIcon: z.string().nullable(),
   clientType: OAuthClientTypeSchema.nullable(),
   createdAt: z.string(),
-  updatedAt: z.string(),
   public: z.boolean(),
   redirectUris: z.array(z.string()),
-  scopes: OAuthScopeListSchema,
+  scopes: PersistedOAuthScopeListSchema,
 });
 
 const JsonStringArraySchema = z.preprocess((value) => {
@@ -57,8 +60,8 @@ export const OAuthConsentRowSchema = z.object({
   clientId: z.string(),
   createdAt: IsoDateStringSchema,
   updatedAt: IsoDateStringSchema,
-  scopes: OAuthScopeListSchema.or(
-    JsonStringArraySchema.pipe(OAuthScopeListSchema),
+  scopes: PersistedOAuthScopeListSchema.or(
+    JsonStringArraySchema.pipe(PersistedOAuthScopeListSchema),
   ),
 });
 
