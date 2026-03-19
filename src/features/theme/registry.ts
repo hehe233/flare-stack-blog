@@ -23,4 +23,8 @@ export const themes: Record<ThemeName, ThemeRouterConfig> = {
     viewTransition: false,
     pendingMs: 1000,
   },
+  kurin: {
+    viewTransition: false,
+    pendingMs: 1000,
+  },
 };
